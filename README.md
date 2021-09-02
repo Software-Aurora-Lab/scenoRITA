@@ -27,7 +27,7 @@ scenoRITA's structure in a nutshell:
 
 * **scenario_generator**: Contains the genetic algorithm scripts needed to generate scenario representations:
   * For scenoRITA_plus use: `scenoRITA_mut.py`, for scenoRITA_minus use: `scenoRITA_immut.py`, and for scenoRITA_random use: `scenoRITA_random.py` 
-  * For clustering use: `Dpython3 DBSCAN_cluster.py <features file>`
+  * For clustering use: `python3 DBSCAN_cluster.py <features file>`
 * **scenario_player**: Contains the scripts needed to launch the simulator, and transform the scenario representations into simulations.
 * **auxiliary**: Auxiliary scripts used by scenario_player and scenario_generator.
 * **grading_metrics**: Contains the test oracles checked during the text execution process. 
