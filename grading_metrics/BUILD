@@ -7,7 +7,8 @@ py_binary(
 	srcs = ["collision.py"],
 	deps = [
 		"//automation/auxiliary/record:read_record",
-		"//modules/tools/perception:replay_perception"
+		"//modules/tools/perception:replay_perception",
+		"//automation/auxiliary/oracles:speeding",
 	],
 )
 
@@ -17,6 +18,7 @@ py_binary(
 	deps = [
 		"//automation/auxiliary/record:read_record",
 		"//automation/grading_metrics:speeding",
+		"//automation/auxiliary/oracles:speeding",
 	],
 )
 
@@ -27,15 +29,7 @@ py_binary(
 		"//automation/auxiliary/record:read_record",
 		"//automation/auxiliary/map:map_tools",
 		"//automation/grading_metrics:collision",
-	],
-)
-
-py_binary(
-	name = "off_road",
-	srcs = ["off_road.py"],
-	deps = [
-		"//automation/auxiliary/record:read_record",
-		"//automation/auxiliary/map:map_tools",
+		"//automation/auxiliary/oracles:speeding",
 	],
 )
 

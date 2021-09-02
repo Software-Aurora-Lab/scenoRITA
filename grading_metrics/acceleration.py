@@ -3,7 +3,7 @@ import argparse
 import sys
 
 from automation.auxiliary.record.read_record import read_by_path
-from automation.grading_metrics.speeding import calculate_speed
+from automation.auxiliary.oracles.speeding import calculate_speed
 
 VIOLATION_DETECTED = 0
 ORACLE_TYPE = None
@@ -32,16 +32,14 @@ def calculate_acceleration(linear_acceleration, linear_velocity, verbose=False):
     accel_y = linear_acceleration.y
     accel_z = linear_acceleration.z
 
-    magnitutde = math.sqrt(accel_x**2 + accel_y**2 + accel_z**2)
+    magnitude = math.sqrt(accel_x**2 + accel_y**2 + accel_z**2)
 
     projection = (accel_x * linear_velocity.x) + \
         (accel_y * linear_velocity.y) + (accel_z * linear_velocity.z)
 
-    # print(accel_x, linear_velocity.x, accel_y, linear_velocity.y, magnitutde)
-
     if projection < 0:
-        return magnitutde * -1
-    return magnitutde
+        return magnitude * -1
+    return magnitude
 
 
 def test_acceleration(messages, accel_target, verbose=False):
@@ -49,6 +47,15 @@ def test_acceleration(messages, accel_target, verbose=False):
     can_begin = False
     init_time = None
     current_time = None
+
+    violation_coord = None      # adc coordinate of the violation
+    violation_value = None      # accel/deaccel value of the first violation
+    adc_heading = None          # adc heading of the violation
+
+    duration_flag = False
+    duration_start = None       # start time of the violation
+    duration_end = None         # end time of the violation
+
     if ORACLE_TYPE == "hard braking":
         max_accel = sys.maxsize
 
@@ -66,20 +73,52 @@ def test_acceleration(messages, accel_target, verbose=False):
             if init_time is None:
                 init_time = current_time
 
+            # accel in meters per square second
             accel = calculate_acceleration(
                 parsed_msg.pose.linear_acceleration,
                 parsed_msg.pose.linear_velocity,
             )
 
             if ORACLE_TYPE == "hard braking":
+                if accel < accel_target:
+                    # The first violation happens if duration start is None
+                    if duration_start is None:
+                        # Record the coordinate, heading of the first occurance of violation
+                        violation_coord = (
+                            parsed_msg.pose.position.x, parsed_msg.pose.position.y)
+                        adc_heading = parsed_msg.pose.heading
+                        duration_flag = True    # can start counting duration
+                        duration_start = current_time
+                        violation_value = accel
+                    if duration_flag:
+                        duration_end = current_time
+                else:
+                    # stop counting duration as the violation ends (or didnt occur)
+                    duration_flag = False
                 max_accel = min(max_accel, accel)
             else:
+                if accel >= accel_target:
+                    if duration_start is None:
+                        violation_coord = (
+                            parsed_msg.pose.position.x, parsed_msg.pose.position.y)
+                        adc_heading = parsed_msg.pose.heading
+                        duration_flag = True
+                        duration_start = current_time
+                        violation_value = accel
+                    if duration_flag:
+                        duration_end = current_time
+                else:
+                    duration_flag = False
                 max_accel = max(max_accel, accel)
 
     if verbose:
-        print(max_accel)
+        print(max_accel, violation_coord)
 
-    return max_accel
+    duration = None
+    if duration_start is not None:
+        duration = duration_end - duration_start
+
+    return max_accel, violation_value, violation_coord, adc_heading, duration
 
 
 def get_oracle_type(accel_value):
@@ -94,13 +133,16 @@ def walk_messages(record_path, accel_value, verbose=False, return_dict=None):
         print(f'\nStart checking {ORACLE_TYPE}')
 
     messages = read_by_path(record_path)
-    output = test_acceleration(messages, accel_value, verbose=verbose)
+    max_accel, violation_value, coord, heading, duration = test_acceleration(
+        messages, accel_value, verbose=verbose)
 
     if return_dict is not None:
         if ORACLE_TYPE == "hard braking":
-            return_dict['hardbreak'] = output
+            return_dict['hardbreak'] = (
+                max_accel, violation_value, coord, heading, duration)
         else:
-            return_dict['accl'] = output
+            return_dict['accl'] = (
+                max_accel, violation_value, coord, heading, duration)
 
     if verbose:
         print(f'Finished checking {ORACLE_TYPE}\n')

@@ -14,7 +14,6 @@ py_binary(
         "//automation/grading_metrics:acceleration",
         "//automation/grading_metrics:collision",
         "//automation/grading_metrics:speeding",
-        "//automation/grading_metrics:off_road",
         "//automation/auxiliary/map:map_tools",
     ],
 )

@@ -7,7 +7,9 @@ from modules.map.proto import map_pb2
 from shapely.geometry import Point, Polygon, LineString
 
 
-DEFAULT_SIM_MAP_PATH = '/apollo/modules/map/data/sunnyvale_loop/sim_map.bin'
+#DEFAULT_SIM_MAP_PATH = '/apollo/modules/map/data/sunnyvale_loop/sim_map.bin'
+DEFAULT_SIM_MAP_PATH = '/apollo/modules/map/data/borregas_ave/sim_map.bin'
+#DEFAULT_SIM_MAP_PATH = '/apollo/modules/map/data/san_mateo/sim_map.bin'
 
 
 def load_mapbin(sim_map_path=None):
@@ -136,7 +138,7 @@ def efficient_fetch_lane(x, y, current_lane, lanes, priority_lanes=None):
         priority_lanes += adjacent_lanes
         for priority_lane in priority_lanes:
             if is_point_in_lane(x, y, lanes[priority_lane]):
-                residing_lanes.append(priority_lane) 
+                residing_lanes.append(priority_lane)
         if len(residing_lanes) > 0:
             return residing_lanes
         # Have to do a complete rescan since the ego car
@@ -253,6 +255,19 @@ def construct_lane_linestring(lane_msg):
     return LineString(left_points + right_points)
 
 
+def construct_lane_boundary_linestring(lane_msg):
+    """
+    Description: Construct two linestrings for the lane's left and right boundary
+
+    Input: A lane message.
+
+    Output: A list containing the linestrings representing the left and right boundary of the lane
+    """
+    left_boundary_points = get_lane_boundary_points(lane_msg.left_boundary)
+    right_boundary_points = get_lane_boundary_points(lane_msg.right_boundary)
+    return [LineString(left_boundary_points), LineString(right_boundary_points)]
+
+
 def is_point_in_lane(x, y, lane_msg):
     '''
     Given the x and y coordinate of the ego car, check 
@@ -289,3 +304,42 @@ def count_lane_length(lanes) -> float:
     for lane_id in lanes:
         total_length += lanes[lane_id].length
     return total_length
+
+
+def construct_junction_polygon_points(junction_msg):
+    """
+    Given a junction message, return its polygon vertices
+    """
+    polygon_vertices = []
+    for point in junction_msg.polygon.point:
+        polygon_vertices.append((point.x, point.y))
+    # polygon_vertices.append(polygon_vertices[-1])
+    return polygon_vertices
+
+
+def is_point_in_junction(x, y, junction_msg) -> bool:
+    """
+    Description:
+        Given the coordinate of a point (x, y) and a junction message, 
+        return if the point is contained in the junction.
+    """
+    junction_polygon = Polygon(construct_junction_polygon_points(junction_msg))
+    current_point = Point(x, y)
+    return current_point.within(junction_polygon)
+
+
+def all_points_not_in_junctions(points) -> bool:
+    """
+    Description:
+        Given a list of point tuples (x, y), return 
+        if all the points in the list are not in junctions from the map
+    """
+    map = load_mapbin()
+    junctions = map.junction
+    x = points[0]
+    y = points[1]
+    for junction in junctions:
+        if is_point_in_junction(x, y, junction):
+            # print(f"{x, y} in junction {junction.id}")
+            return False
+    return True

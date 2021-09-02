@@ -12,7 +12,7 @@ import subprocess
 from multiprocessing import Process, Manager
 
 from automation.auxiliary.routing import send_routing_request
-from automation.grading_metrics import collision, acceleration, speeding
+from automation.grading_metrics import acceleration, speeding, collision
 
 try:
     from subprocess import DEVNULL  # Python 3.
@@ -73,10 +73,12 @@ def get_routing(args):
 def record_output(record_time=10):
     # Start recording messages and producing perception messages
     start_record_cmd = f'cyber_recorder record -o {TEMP_OUTPUT_PATH}{OUTPUT_NAME} -a &'
+    
     subprocess.Popen(start_record_cmd,
                      shell=True,
                      stdout=DEVNULL,
                      stderr=DEVNULL)
+
     p = subprocess.Popen(
         ['/apollo/modules/tools/perception/sunnyvale_loop_perception.bash'],
         stdout=DEVNULL,
@@ -107,7 +109,7 @@ def run_simulation(routing_list, init_x, init_y, dest_x, dest_y):
             float(routing_info['dest_x']), float(routing_info['dest_y'])
 
     send_routing_request.request_routing(
-        init_x, init_y, dest_x, dest_y, verbose=False)
+       init_x, init_y, dest_x, dest_y, verbose=False)
     time.sleep(1)
     record_output()
 
@@ -145,7 +147,7 @@ def run_oracles():
             Process(target=speeding.walk_messages,
                     args=(output_path,),
                     kwargs={'return_dict': oracle_results}))
-    
+
     for process in processes:
         process.start()
 
@@ -155,11 +157,13 @@ def run_oracles():
     accl = oracle_results['accl']
     hardbreak = oracle_results['hardbreak']
     min_dist = oracle_results['min_dist']
+    collision_states = oracle_results['collision_states']
     min_speed = oracle_results['min_speed']
     traveled_lanes = oracle_results['traveled_lanes']
     boundary_dist = oracle_results['boundary_dist']
 
-    return min_dist, traveled_lanes, min_speed, boundary_dist, accl, hardbreak
+    return min_dist, traveled_lanes, min_speed, boundary_dist, accl, hardbreak, collision_states
+
 
 def main():
     global OUTPUT_NAME
@@ -181,16 +185,26 @@ def main():
 
     if args.output:
         OUTPUT_NAME = args.output
-
+    
+    sim_time=time.time()
     run_simulation(routing_list, init_x, init_y, dest_x, dest_y)
-    min_dist, all_lanes, min_speed, boundary_dist , accl , hardbreak = run_oracles()
+    sim_time=time.time()-sim_time
 
-    lanes_only=""
+    orcle_time=time.time()
+    min_dist, all_lanes, min_speed, boundary_dist, accl, hardbreak, collision = run_oracles()
+    orcle_time=time.time()-orcle_time
+
+    lanes_only = ""
     for lane in all_lanes:
-        lanes_only=lanes_only+lane[0]+" "
+        lanes_only = lanes_only + lane[0] + " "
     lanes_only.strip(" ")
 
-    print(min_dist, lanes_only, min_speed, boundary_dist, accl, hardbreak, all_lanes, sep="\n")
+    if min_dist == set() or len(lanes_only) == 0:
+        print(None)
+    else:
+        print(min_dist, lanes_only, min_speed, boundary_dist,
+              accl, hardbreak, all_lanes, collision, sim_time,orcle_time,sep="\n")
+
 
 if __name__ == '__main__':
     main()
