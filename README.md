@@ -9,7 +9,7 @@ This repository contains:
 The figure below shows the overall workflow of scenoRITA. Our main goal is to create valid and effective driving scenarios that expose AVs software to safety and comfort violations. scenoRITA achieves this goal as follows:
 1. It takes as an input a set of domain-specific constraints which dictates what constitutes a valid driving-scenario (e.g.,obstacles should be moving in the direction of traffic in the lane and have valid obstacle identifiers).
 2. The Scenario Generator uses a genetic algorithm to produce driving scenarios with randomly generated but valid obstacles, following the domain-specific constraints. The genetic algorithm evolves the driving scenarios with the aim of finding scenarios with safety and comfort violations.
-3. Generated Scenarios Player converts the genetic representation of scenarios(Generated Scenarios), from the previous step, into driving simulations where the planning output of the AV under test is producedand then recorded by Planning Output Recorder.
+3. Generated Scenarios Player converts the genetic representation of scenarios(Generated Scenarios), from the previous step, into driving simulations where the planning output of the AV under test is produced and recorded by Planning Output Recorder.
 4. The planning outputis is then evaluated by Grading Metrics Checker for safety and comfort violations. 
 5. When the evolution process terminates,the Duplicate Violations Detector inspects the violations produced by Grading Metrics Checker to eliminate any duplicate violations,and produces a set of unique safety and comfort violations.
 
