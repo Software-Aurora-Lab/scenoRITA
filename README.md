@@ -35,14 +35,15 @@ scenoRITA's structure in a nutshell:
 
 ## Prerequisites: ##
 * Any linux distrbutions, preferably Ubuntu 18.04.5 LTS (Bionic Beaver)
+* Apollo [prerequisites](https://github.com/UCI-SORA-LAB/apollo#prerequisites)
 * Python3
-* We made some changes to Apollo 6.0 to enable scenoRITA to run. Clone a copy of our modified version of Apollo found [here](https://github.com/UCI-SORA-LAB/apollo)
-* Follow the instructions [here](https://github.com/UCI-SORA-LAB/apollo/tree/automation/docs/demo_guide) to start and build apollo.
-* Inside the Apollo docker, run the following script to clone scenoRITA and install all i’s dependencies:
+* We made some changes to Apollo 6.0 to enable scenoRITA to run. Clone a copy of the modified version of Apollo found [here](https://github.com/UCI-SORA-LAB/apollo)
+* Follow the instructions found [here](https://github.com/UCI-SORA-LAB/apollo/tree/automation/docs/demo_guide) to start and build apollo.
+* Inside the Apollo docker, run the following script to clone scenoRITA and install all its dependencies:
 ```
 ./scenoRITA.sh
 ```
-* Run the following commands to start dreamview and he needed modules:
+* Run the following commands to start dreamview and the needed modules:
 ```
 bash /apollo/scripts/bootstrap.sh start
 bash /apollo/automation/auxiliary/modules/start_modules.sh
