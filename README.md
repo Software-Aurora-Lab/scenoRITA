@@ -36,27 +36,18 @@ scenoRITA's structure in a nutshell:
 ## Prerequisites: ##
 * Any linux distrbutions, preferably Ubuntu 18.04.5 LTS (Bionic Beaver)
 * Python3
-* Pre-installation of deap:
+* We made some changes to Apollo 6.0 to enable scenoRITA to run. Clone a copy of our modified version of Apollo found [here](https://github.com/UCI-SORA-LAB/apollo)
+* Follow the instructions [here](https://github.com/UCI-SORA-LAB/apollo/tree/automation/docs/demo_guide) to start and build apollo.
+* Inside the Apollo docker, run the following script to clone scenoRITA and install all i’s dependencies:
 ```
-pip3 install deap
+./scenoRITA.sh
 ```
-* Pre-installation of networkx:
+* Run the following commands to start dreamview and he needed modules:
 ```
-pip3 install networkx
-``` 
-* Pre-installation of pandas:
+bash /apollo/scripts/bootstrap.sh start
+bash /apollo/automation/auxiliary/modules/start_modules.sh
+source /apollo/cyber/setup.bash
 ```
-pip3 install pandas
-``` 
-* Pre-installation of sklearn:
-```
-pip3 install sklearn
-``` 
-* Pre-installation of kneed:
-```
-pip3 install kneed
-``` 
-* Pre-installation of [Apollo Docker containers](https://github.com/ApolloAuto/apollo/blob/a29a563e95944b603ab9be338cce46e6486a89be/docs/quickstart/apollo_software_installation_guide.md)
 
 ## Using scenoRITA: ##
 * To run scenorRITA from End-To-End, change dicrectory to `scenario_generator`:
