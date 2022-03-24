@@ -10,7 +10,7 @@ The figure below shows the overall workflow of scenoRITA. Our main goal is to cr
 1. It takes as an input a set of domain-specific constraints which dictates what constitutes a valid driving-scenario (e.g.,obstacles should be moving in the direction of traffic in the lane and have valid obstacle identifiers).
 2. The Scenario Generator uses a genetic algorithm to produce driving scenarios with randomly generated but valid obstacles, following the domain-specific constraints. The genetic algorithm evolves the driving scenarios with the aim of finding scenarios with safety and comfort violations.
 3. Generated Scenarios Player converts the genetic representation of scenarios(Generated Scenarios), from the previous step, into driving simulations where the planning output of the AV under test is produced and recorded by Planning Output Recorder.
-4. The planning outputis is then evaluated by Grading Metrics Checker for safety and comfort violations. 
+4. The planning output is then evaluated by Grading Metrics Checker for safety and comfort violations. 
 5. When the evolution process terminates,the Duplicate Violations Detector inspects the violations produced by Grading Metrics Checker to eliminate any duplicate violations,and produces a set of unique safety and comfort violations.
 
 ![Figure 2](/images/approach.png) 
@@ -34,7 +34,7 @@ scenoRITA's structure in a nutshell:
 * **evaluation-results**: contains an extended version of the evaluation results presented in the paper (Section 4). Please click [here](https://figshare.com/s/0c4e2b72b4915f9fd077) for the 10 case studies described in Section 4.2.
 
 ## Prerequisites: ##
-* Any linux distrbutions, preferably Ubuntu 18.04.5 LTS (Bionic Beaver)
+* Any linux distributions, preferably Ubuntu 18.04.5 LTS (Bionic Beaver)
 * Apollo [prerequisites](https://github.com/UCI-SORA-LAB/apollo#prerequisites)
 * Python3
 * We made some changes to Apollo 6.0 to enable scenoRITA to run. Clone a copy of the modified version of Apollo found [here](https://github.com/UCI-SORA-LAB/apollo)
@@ -51,11 +51,25 @@ source /apollo/cyber/setup.bash
 ```
 
 ## Using scenoRITA: ##
-* To run scenorRITA from End-To-End, change dicrectory to `scenario_generator`:
+* To run scenoRITA from end-to-end, change directory to `scenario_generator`:
 ``` 
 cd scenario_generator/
 ```
-* Modify `scenoRITA_mut.py` (e.g., No. of generations, domain specific constrains etc). Then run the framework using the followiing command:
+* Modify `scenoRITA_mut.py` (e.g., No. of generations, domain specific constraints etc). Then run the framework using the following command:
 ``` 
 bazel run scenoRITA_mut 
 ```
+
+## How to cite scenoRITA: ##
+Authors of scientific papers using scenoRITA are encouraged to cite the following paper.
+```
+@misc{scenorita2022,
+      title={scenoRITA: Generating Less-Redundant, Safety-Critical and Motion Sickness-Inducing Scenarios for Autonomous Vehicles},
+      author={Sumaya Almanee, Xiafa Wu, Yuqi Huai, Qi Alfred Chen and Joshua Garcia},
+      year={2022},
+      eprint={2112.09725},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE}
+}
+```
+
