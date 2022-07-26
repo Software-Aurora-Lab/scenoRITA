@@ -5,6 +5,9 @@ This repository contains:
 * Video recordings of 10 case studies discussed in the paper (Section 4.2).
 * An extended version of the evaluation results.
 
+The DOI for this repository is: [![DOI](https://zenodo.org/badge/342417515.svg)](https://zenodo.org/badge/latestdoi/342417515)
+
+
 ## Overview: ##
 The figure below shows the overall workflow of scenoRITA. Our main goal is to create valid and effective driving scenarios that expose AVs software to safety and comfort violations. scenoRITA achieves this goal as follows:
 1. It takes as an input a set of domain-specific constraints which dictates what constitutes a valid driving-scenario (e.g.,obstacles should be moving in the direction of traffic in the lane and have valid obstacle identifiers).
